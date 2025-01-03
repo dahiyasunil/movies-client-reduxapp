@@ -16,6 +16,18 @@ export const addMovie = createAsyncThunk(
   }
 );
 
+export const updateMovie = createAsyncThunk(
+  "movies/update",
+  async ({ movieId, updatedData }) => {
+    const response = await axios.post(
+      `${appServer}/movies/${movieId}`,
+      updatedData
+    );
+
+    return response.data;
+  }
+);
+
 export const deleteMovie = createAsyncThunk(
   "movies/delete",
   async (movieId) => {
@@ -54,6 +66,20 @@ export const movieSlice = createSlice({
       state.movies.push(action.payload);
     });
     builder.addCase(addMovie.rejected, (state, action) => {
+      state.status = "error";
+      state.error = action.payload;
+    });
+    builder.addCase(updateMovie.pending, (state) => {
+      state.status = "updating";
+    });
+    builder.addCase(updateMovie.fulfilled, (state, action) => {
+      state.status = "updated";
+      const movieIndex = state.movies.findIndex(
+        (movie) => movie._id === action.payload._id
+      );
+      state.movies[movieIndex] = action.payload;
+    });
+    builder.addCase(updateMovie.rejected, (state, action) => {
       state.status = "error";
       state.error = action.payload;
     });

@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMovie } from "../../features/movieSlice";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { addMovie, updateMovie } from "../../features/movieSlice";
 
 const MovieForm = () => {
   const dispatch = useDispatch();
+  const { operation } = useParams();
+  const movieDetails = useLocation().state;
+  const navigate = useNavigate();
+
   const { status, error } = useSelector((state) => state.movies);
 
   const [movieData, setMovieData] = useState({
@@ -17,6 +22,19 @@ const MovieForm = () => {
     posterUrl: "",
   });
   const [disabled, setDisabled] = useState("");
+
+  const setDefaultMovieData = () => {
+    setMovieData({
+      title: "",
+      releaseYear: null,
+      genre: [],
+      directors: [],
+      actors: [],
+      rating: null,
+      plot: "",
+      posterUrl: "",
+    });
+  };
 
   const changeHandler = (e) => {
     const { name, value } = e.target;
@@ -35,17 +53,25 @@ const MovieForm = () => {
   };
 
   useEffect(() => {
+    if (operation === "update" && movieDetails) {
+      setMovieData({
+        title: movieDetails.title || "",
+        releaseYear: movieDetails.releaseYear || null,
+        genre: movieDetails.genre || [],
+        directors: movieDetails.directors || [],
+        actors: movieDetails.actors || [],
+        rating: movieDetails.rating || null,
+        plot: movieDetails.plot || "",
+        posterUrl: movieDetails.posterUrl || "",
+      });
+    } else {
+      setDefaultMovieData();
+    }
+  }, [movieDetails]);
+
+  useEffect(() => {
     if (status === "added") {
-      // setMovieData({
-      //   title: "",
-      //   releaseYear: null,
-      //   genre: [],
-      //   directors: [],
-      //   actors: [],
-      //   rating: null,
-      //   plot: "",
-      //   posterUrl: "",
-      // });
+      setDefaultMovieData();
       setDisabled("");
     }
   }, [status]);
@@ -53,12 +79,22 @@ const MovieForm = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     setDisabled("disabled");
-    await dispatch(addMovie(movieData));
+    if (operation === "add") {
+      dispatch(addMovie(movieData));
+    }
+    if (operation === "update") {
+      dispatch(
+        updateMovie({ movieId: movieDetails._id, updatedData: movieData })
+      );
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    }
   };
 
   return (
     <section>
-      <h1>Add Movie</h1>
+      <h1>{operation === "add" ? "Add" : "Update"} Movie</h1>
       <form onSubmit={submitHandler}>
         <div className="row">
           <div className="col col-lg-6">
@@ -175,10 +211,11 @@ const MovieForm = () => {
           <button type="submit" className={`btn btn-primary px-5 ${disabled}`}>
             {status === "adding" ? (
               <div className="spinner-border text-secondary mb-3">
-                <span className="visually-hidden">adding...</span>Adding...
+                <span className="visually-hidden">waiting...</span>
+                {operation === "add" ? "Adding" : "Updating"}...
               </div>
             ) : (
-              "Add Movie"
+              `${operation === "add" ? "Add" : "Update"} Movie`
             )}
           </button>
         </div>

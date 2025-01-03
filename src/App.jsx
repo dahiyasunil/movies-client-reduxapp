@@ -11,7 +11,8 @@ function App() {
         <div className="container py-4">
           <Routes>
             <Route path="/" element={<MovieView />} />
-            <Route path="/manage/add" element={<MovieForm />} />
+            <Route path="/manage/:operation" element={<MovieForm />} />
+            <Route path="/manage/:operation" element={<MovieForm />} />
           </Routes>
         </div>
       </Router>

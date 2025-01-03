@@ -1,11 +1,11 @@
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { deleteMovie } from "../../features/movieSlice";
 
 const MovieList = ({ movies }) => {
   const dispatch = useDispatch();
 
   const deleteHandler = (movieId) => {
-    console.log(movieId);
     dispatch(deleteMovie(movieId));
   };
 
@@ -34,9 +34,13 @@ const MovieList = ({ movies }) => {
                   </span>
                 </small>
               </p>
-              <button className="btn btn-sm btn-warning opacity-75 px-5 px-lg-4">
+              <Link
+                to="/manage/update"
+                className="btn btn-sm btn-warning opacity-75 px-5 px-lg-4"
+                state={movie}
+              >
                 <small className="fw-semibold">Update</small>
-              </button>
+              </Link>
               <button
                 className="btn btn-sm btn-danger opacity-75 px-5 px-lg-4 float-end"
                 onClick={() => deleteHandler(movie._id)}
