@@ -1,5 +1,13 @@
+import { useDispatch } from "react-redux";
+import { deleteMovie } from "../../features/movieSlice";
+
 const MovieList = ({ movies }) => {
-  const deleteHandler = (movieId) => {};
+  const dispatch = useDispatch();
+
+  const deleteHandler = (movieId) => {
+    console.log(movieId);
+    dispatch(deleteMovie(movieId));
+  };
 
   return (
     <div className="row">
@@ -19,7 +27,11 @@ const MovieList = ({ movies }) => {
               <p className="card-text">
                 <small>
                   <span className="text-secondary">Genre: </span>
-                  <p>{movie.genre.join(", ")}</p>
+                  <span>
+                    {movie.genre.join(", ").length > 25
+                      ? `${movie.genre.join(", ").slice(0, 25)}...`
+                      : movie.genre.join(", ")}
+                  </span>
                 </small>
               </p>
               <button className="btn btn-sm btn-warning opacity-75 px-5 px-lg-4">
