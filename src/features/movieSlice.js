@@ -42,7 +42,7 @@ export const movieSlice = createSlice({
       state.status = "adding";
     });
     builder.addCase(addMovie.fulfilled, (state, action) => {
-      state.status = "success";
+      state.status = "added";
       state.movies.push(action.payload);
     });
     builder.addCase(addMovie.rejected, (state, action) => {

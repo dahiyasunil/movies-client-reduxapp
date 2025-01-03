@@ -35,7 +35,7 @@ const Header = () => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/" className="nav-link text-light">
+                <NavLink to="/manage/add" className="nav-link text-light">
                   Add Movie
                 </NavLink>
               </li>
