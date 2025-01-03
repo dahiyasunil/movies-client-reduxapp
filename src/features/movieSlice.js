@@ -16,6 +16,14 @@ export const addMovie = createAsyncThunk(
   }
 );
 
+export const deleteMovie = createAsyncThunk(
+  "movies/delete",
+  async (movieId) => {
+    const response = await axios.delete(`${appServer}/movies/${movieId}`);
+    return response.data;
+  }
+);
+
 const initialState = {
   movies: [],
   status: "idle",
@@ -46,6 +54,19 @@ export const movieSlice = createSlice({
       state.movies.push(action.payload);
     });
     builder.addCase(addMovie.rejected, (state, action) => {
+      state.status = "error";
+      state.error = action.payload;
+    });
+    builder.addCase(deleteMovie.pending, (state) => {
+      state.status = "deleting";
+    });
+    builder.addCase(deleteMovie.fulfilled, (state, action) => {
+      state.status = "deleted";
+      state.movies = state.movies.filter(
+        (movie) => movie._id != action.payload._id
+      );
+    });
+    builder.addCase(deleteMovie.rejected, (state, action) => {
       state.status = "error";
       state.error = action.payload;
     });
